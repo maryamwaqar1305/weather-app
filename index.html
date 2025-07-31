@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather App</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background: url('clouds.png') no-repeat center center fixed;
+      background-size: cover;
+      
+    }
+
+    .weather-container {
+      background: rgb(254, 255, 255);
+      border-radius: 20px;
+      border: 2px solid #ccc;
+      border-color: #fee964;
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .weather-container h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input {
+      padding: 10px 15px;
+      width: 80%;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      outline: none;
+    }
+
+    button {
+      background-color: #399ef7;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-bottom: 20px;
+    }
+
+    button:hover {
+      background-color: #00f2fe;
+    }
+
+    .result {
+      margin-top: 15px;
+      color: #222;
+    }
+
+    .temp {
+      font-size: 40px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .weather-icon {
+      width: 60px;
+      height: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="weather-container">
+    <h2>🌤️ Check weather</h2>
+    <input type="text" id="locationInput" placeholder="Enter location...">
+    <br />
+    <button onclick="getWeather()">Get Weather</button>
+
+    <div id="weatherResult" class="result"></div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const location = document.getElementById('locationInput').value;
+      const resultDiv = document.getElementById('weatherResult');
+
+      if (!location) {
+        resultDiv.innerHTML = "<p>Please enter a location 🌍</p>";
+        return;
+      }
+
+      const apiKey = '1d2514b53b1b4aecba6134943252107';
+      const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location}&aqi=yes`;
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Location not found");
+        const data = await res.json();
+
+        const temp = data.current.temp_c;
+        const condition = data.current.condition.text;
+        const icon = data.current.condition.icon;
+        const name = data.location.name;
+        const country = data.location.country;
+
+        resultDiv.innerHTML = `
+          <h3>${name}, ${country}</h3>
+          <img class="weather-icon" src="https:${icon}" alt="${condition}" />
+          <div class="temp">${temp}°C</div>
+          <p>${condition}</p>
+        `;
+      } catch (error) {
+        resultDiv.innerHTML = `<p>❌ Couldn't find weather for "${location}". Try again.</p>`;
+      }
+    }
+  </script>
+
+</body>
+</html>
